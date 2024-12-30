@@ -1,0 +1,100 @@
+App.js :
+
+jsx
+Copy code
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import ListUser from "./components/ListUser";
+
+export default function App() {
+  const [utilisateurs, setUtilisateurs] = useState([]);
+
+  useEffect(() => {
+    const getData = async () => {
+      const users = await axios.get("https://jsonplaceholder.typicode.com/users");
+      setUtilisateurs(users.data);
+    };
+    getData();
+  }, []);
+
+  return (
+    <div>
+      {utilisateurs ? (
+        <div>
+          <ListUser utilisateurs={utilisateurs} />
+        </div>
+      ) : (
+        "Pas d'utilisateurs!!!!"
+      )}
+    </div>
+  );
+}
+
+
+
+ListUser.js :
+
+jsx
+Copy code
+import React, { useState } from "react";
+import User from "./User";
+
+export default function ListUser(props) {
+  const [activeId, setActiveId] = useState(1);
+  const users = props.utilisateurs;
+
+  function handleChangeActiveId(id) {
+    setActiveId(id);
+  }
+
+  return (
+    <div className="App">
+      <h1>Nombre d'utilisateurs : {props.utilisateurs.length}</h1>
+      {users.map((user) => {
+        return <User user={user} activeId={activeId} handleChangeActiveId={handleChangeActiveId} />;
+      })}
+    </div>
+  );
+}
+
+
+
+User.js :
+
+jsx
+Copy code
+import React, { useState } from "react";
+import axios from 'axios';
+
+export default function User(props) {
+  const [posts, setPosts] = useState([]);
+
+  function HandelPosts() {
+    const getData = async () => {
+      const posts = await axios.get("https://jsonplaceholder.typicode.com/posts");
+      setPosts(posts.data.filter((post) => post.userId === props.user.id));
+    };
+    getData();
+    props.handleChangeActiveId(props.user.id);
+  }
+
+  return (
+    <div className="child" key={props.user.id}>
+      <h3>Nom : {props.user.name} {props.user.username}</h3>
+      <p>Email : {props.user.email}</p>
+      <p>Ville : {props.user.address.city}</p>
+      <p>Rue : {props.user.address.street}</p>
+      <button onClick={HandelPosts}>Détails des posts</button>
+      {props.activeId === props.user.id && (
+        <div>
+          <h5 style={{ color: "green" }}>Nombre des posts : {posts.length}</h5>
+          <ul>
+            {posts.map((post) => (
+              <li key={post.id}>{post.title}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}

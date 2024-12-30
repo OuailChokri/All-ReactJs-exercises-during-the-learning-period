@@ -1,0 +1,216 @@
+/components/stagiaire/ListeStagiaires.js : 
+
+import React from "react";
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import Header from "../header/Header";
+import { createUrl } from "./createUrl";
+
+const List =()=>{
+    const stagiaires = useSelector((state)=>state.stagiaires);
+    return(
+        <div>
+            <div>
+                <Header/>
+            </div>
+            {stagiaires.map((stagiaire)=>{
+                return(
+                    <div style={{justifyContent : "space-around"}}>
+                        <Link to={`details/${stagiaire.nom}`}>
+                        <img src={createUrl(stagiaire.image)} style={{width:'200px'}} />
+                        <p>{stagiaire.nom}</p>
+                        </Link>
+                    </div>
+                )
+            })}
+        </div>
+    );
+}
+
+export default List;
+
+
+/components/stagiaire/DetailsStagiaire.js : 
+
+import React from "react";
+import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import Header from "../header/Header";
+import { createUrl } from "./createUrl";
+
+const Details =()=>{
+
+    const stagiaires = useSelector((data)=>data.stagiaires);
+    const {nom} = useParams();
+    const st = stagiaires.find((s)=>s.nom === nom);
+    return(
+        <div>
+            <div>
+                <Header/>
+            </div>
+            {st ? 
+                <div>
+                    <img src={createUrl(st.image)} style={{width:'200px'}} />
+                    <p>Nom : {st.nom}</p>
+                    <p>Prenom : {st.prenom}</p>
+                    <p>Filiere : {st.filiere}</p>
+                </div> : ''}
+        </div>
+    );
+};
+
+export default Details;
+
+/components/stagiaire/createUrl.js : 
+
+// createUrl.js
+export const createUrl = (image) => {
+    const imageUrl = `/images/${image}`;
+    return imageUrl;
+};
+
+
+/components/stagiaire/AjouterStagiaire.js :
+
+import {React, useState} from "react";
+import {useDispatch, useSelector} from 'react-redux';
+import { add } from "../../redux/action";
+import Header from "../header/Header";
+import { Link } from "react-router-dom";
+
+const Ajouter =()=>{
+    const [stagiaire,setStagiaire] = useState({
+        image : "",
+        nom : "",
+        prenom : "",
+        filiere : ""
+    });
+    const dispatch = useDispatch();
+    const stagiaires = useSelector((data)=>data.stagiaires);
+
+    const ajouter =()=>{
+        dispatch(add(stagiaire));
+        console.log(stagiaire);
+        console.log(stagiaires);
+    };
+
+    return(
+        <div>
+            <div>
+                <Header/>
+            </div>
+            <input type="text" placeholder="Saisie Le lien de l'image" onChange={(e)=>setStagiaire({...stagiaire,image : e.target.value})}/>
+            <input type="text" placeholder="Saisie Le nom" onChange={(e)=>setStagiaire({...stagiaire,nom : e.target.value})}/>
+            <input type="text" placeholder="Saisie Le prenom" onChange={(e)=>setStagiaire({...stagiaire,prenom : e.target.value})}/>
+            <input type="text" placeholder="Saisie Le filiere" onChange={(e)=>setStagiaire({...stagiaire,filiere : e.target.value})}/>
+            <Link to="/" >
+            <button onClick={ajouter} >Ajouter</button>
+            </Link>
+            
+        </div>
+    );
+};
+
+export default Ajouter;
+
+/redux/action.js : 
+
+export const add =(stagiaire)=>{
+    return {type : "ADD", payload :{stagiaire}};
+};
+
+/redux/reducer.js : 
+
+const initialState = {
+    stagiaires : [
+        {
+            image: "product1.jpg",
+            nom : "Zaid",
+            prenom :  "Riyad",
+            filiere : "TDI"
+        },
+        {
+            image : "product2.jpg",
+            nom : "Ouail",
+            prenom :  "Chokri",
+            filiere : "DEV"
+        },
+        {
+            image : "product3.jpg",
+            nom : "Ihab",
+            prenom :  "Chokri",
+            filiere : "DES"
+        }
+    ]
+}
+const Reducer =(state= initialState, action)=>{
+    switch(action.type){
+        case "ADD" : 
+        return {...state, stagiaires : [...state.stagiaires,action.payload.stagiaire]};
+        default : return state;
+    }
+}
+export default Reducer;
+
+index.js : 
+
+import React from "react";
+import { createRoot } from "react-dom";  
+import App from "./App";
+import { Provider } from "react-redux";
+import { legacy_createStore } from "redux";
+import Reducer from "./redux/reducer";
+
+const store = legacy_createStore(Reducer);
+const root = createRoot(document.getElementById("root"));  
+root.render(
+  <Provider store={store} >
+    <App />
+  </Provider>
+);
+
+App.js : 
+
+import React from "react";
+import {BrowserRouter,Routes,Route} from 'react-router-dom';
+import List from "./components/stagiaire/ListeStagiaires";
+import Details from "./components/stagiaire/DetailsStagiaire";
+import Ajouter from "./components/stagiaire/AjouterStagiaire";
+
+const App =()=>{
+    return(
+        <div>
+            <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<List/>}/>
+                <Route path="/details/:nom" element={<Details/>}/>
+                <Route path="/-add" element={<Ajouter/>}/>
+            </Routes>
+            </BrowserRouter>
+        </div>
+    );
+}
+
+export default App;
+
+/components/header/Header.js : 
+
+import React from "react";
+import { Link } from "react-router-dom";
+import "./Header.css"; // Importez votre fichier de style CSS
+
+const Header = () => {
+    return (
+        <div className="header-container">
+            <Link to="/" className="header-link">
+                <p>Liste des stagiaires</p>
+            </Link>
+            <Link to="/-add" className="header-link">
+                <p>Ajouter un stagiaire</p>
+            </Link>
+        </div>
+    );
+};
+
+export default Header;
+ 

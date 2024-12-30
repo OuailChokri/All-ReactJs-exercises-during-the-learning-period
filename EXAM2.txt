@@ -1,0 +1,219 @@
+Ex 1 : 
+
+Calculatrice.js : 
+
+import React, { useState } from "react";
+import homme from './homme.png';
+import femme from './femmee.png';
+
+const Calculate = () => {
+  const [taille, setTaille] = useState('');
+  const [genre, setGenre] = useState('');
+  const [poids, setPoids] = useState('');
+  const [erreur,setErreur] = useState('');
+
+  function Calculer() {
+    if(isNaN(taille)){
+        setErreur('la taille doit etre entier ');
+    }
+    else {
+        setErreur('');
+       setPoids(Math.floor(Math.random() * 100)); 
+    }
+    
+  }
+
+  return (
+    <div>
+      <label>Taille en CM:</label><br/>
+      <input type="text" onChange={(e) => setTaille(e.target.value)} /><br/>
+      <label>Genre:</label><br/>
+      <input type="text" onChange={(e) => setGenre(e.target.value)} placeholder="Choisir le genre" />
+      {genre === "femme" ? <img src={femme} alt="femme" style={{width : '100px'}} /> : <img src={homme} alt="homme" style={{width : '100px'}}/>} <br/>
+      <label>Poids idéal:</label><br/>
+      <input type="text" value={erreur === "" ? poids : erreur}  /><br/>
+      <button onClick={Calculer}>Calculer</button>
+    </div>
+  );
+}
+
+export default Calculate;
+
+App.js : 
+
+import Calculatrice from './Calculatrice';
+
+const App = () => {
+
+  return(
+    <div>
+      <Calculatrice/>
+    </div>
+  );  
+};
+
+export default App;
+
+
+Ex 2 : 
+
+cart.js :
+
+import React from "react";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { increment } from "../store/action";
+
+const Cart = () =>{
+  const dispatch = useDispatch();
+  const items = useSelector((data)=>data.items);
+
+  function handleLike(itemId){
+    dispatch(increment(itemId));
+  }
+
+  return(
+    <div>
+      {items.map((item)=>{
+        return (
+          <div key={item.id}>
+            <h3>{item.titre}</h3>
+            <p>Auteur : {item.auteur}</p>
+            <p>Edition : {item.edition}</p>
+            <button onClick={()=>handleLike(item.id)} >Like /{item.counter}/</button>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+export default Cart;
+
+reducer.js : 
+
+const initialState = {
+  items: [
+    {
+      "id": "1",
+      "titre": "RESTful java Web Services",
+      "auteur": "David Lu",
+      "edition": "Packt",
+      "poster": "http://localhost/livres/livre1.png",
+      "counter": 0
+    },
+    {
+      "id": "2",
+      "titre": "RESTful java Web Services",
+      "auteur": "David Lu",
+      "edition": "Packt",
+      "poster": "http://localhost/livres/livre2.png",
+      "counter": 0
+    },
+    {
+      "id": "3",
+      "titre": "RESTful java Web Services",
+      "auteur": "David Lu",
+      "edition": "Packt",
+      "poster": "http://localhost/livres/livre3.png",
+      "counter": 0
+    }
+  ]
+};
+
+const Reducer = (state = initialState, action) => {
+  switch (action.type) {
+    case 'increment':
+      const itemToIncrement = state.items.find((item) => item.id === action.payload);
+      if (itemToIncrement) {
+        return {
+          ...state,
+          items: state.items.map((item) =>
+            item.id === action.payload ? { ...item, counter: item.counter + 1 } : item
+          )
+        };
+      }
+      // Add a default return in case the item is not found
+      return state;
+
+    default:
+      return state;
+  }
+};
+
+export default Reducer;
+
+action.js : 
+
+export const increment =(id)=>{
+  return {type : 'increment',payload : id}
+}
+
+Ex-3-1 : 
+
+import { React,useEffect, useState } from 'react';
+
+const Api = ()=>{
+    const [data,setData] = useState(null);
+    useEffect(()=>{
+        fetch('Https://Mon Api')
+        .then((response)=>response.json())
+        .then((data)=>{
+            setData(data);
+        });
+        
+    },[]);
+    return (
+        <div>
+
+        </div>
+    );
+}
+
+
+Ex-3-2:
+
+const Objet =()=>{
+    
+const data = [
+    {
+        "country": "Morocco",
+        "countryInfo" : {
+            "_id":1,
+            "iso2":"Abréve",
+            "iso3":"Abréve",
+            "lat":10,
+            "long":10,
+            "flag":"path"
+        },
+        "cases" : 100,
+        "todaycases":10,
+        "deaths":5
+    },
+    {
+        "country": "france",
+        "countryInfo" : {
+            "_id":2,
+            "iso2":"Abréve",
+            "iso3":"Abréve",
+            "lat":10,
+            "long":10,
+            "flag":"path"
+        },
+        "cases" : 100,
+        "todaycases":10,
+        "deaths":5
+    }
+]
+    return (
+        <div>
+            {data.map((d)=>{
+                return(
+                    <div key={d.countryInfo._id}>
+                        <p>{d.country} ----------- {d.cases}</p>
+                    </div>
+                );
+            })}
+        </div>
+    );
+}
+export default Objet;

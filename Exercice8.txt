@@ -1,0 +1,57 @@
+Form.js : 
+
+import React, { useState } from "react";
+
+export default function Form() {
+  const [nom, setNom] = useState('');
+  const [prenom, setPrenom] = useState('');
+
+  function handlerOnChangeNom(event) {
+    setNom(event.target.value);
+  }
+
+  function handlerOnChangePrenom(event) {
+    setPrenom(event.target.value);
+  }
+
+  function handlerSubmit(event) {
+    event.preventDefault();
+    alert(`Nom: ${nom}, Prénom: ${prenom}`);
+  }
+
+  return (
+    <div className="container">
+      <form onSubmit={handlerSubmit}>
+        <div className="list">
+          <h2 className="title">Formulaire Inscription</h2>
+          <div>
+            <label>Nom:</label>
+            <input type="text" onChange={handlerOnChangeNom} value={nom} />
+          </div>
+          <div>
+            <label>Prénom:</label>
+            <input type="text" onChange={handlerOnChangePrenom} value={prenom} />
+          </div>
+          <div>
+            <input type="submit" value="Valider" />
+          </div>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+
+App.js : 
+
+import React, { useState } from "react";
+import Form from "./Form";
+import './index.css'
+
+export default function App() {
+  return (
+    <div className="App">
+      <Form />
+    </div>
+  );
+}

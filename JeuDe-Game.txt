@@ -1,0 +1,48 @@
+import React from "react";
+
+const TARGET_NUMBER = 6; 
+
+export default class JeuDe extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { face: null, compteur: 0, fin: false };
+  }
+
+  jouer() {
+    const valeur = Math.floor(Math.random() * 6) + 1;
+    this.setState((prevState) => ({ face: valeur, compteur: prevState.compteur + 1 }));
+    if (valeur === TARGET_NUMBER) {
+      this.setState({ fin: true });
+    }
+  }
+
+  initialiser() {
+    this.setState({ face: null, compteur: 0, fin: false });
+  }
+
+  getImage() {
+    if (this.state.face !== null) {
+      return `images/face${this.state.face}.png`;
+    }
+    return ""; 
+  }
+
+  render() {
+    const styleImage = { width: "100px", height: "100px" };
+    const message = this.state.fin ? "Bravo vous avez trouvé la face cachée....." : "";
+
+    return (
+      <div>
+        <h1>Jeu de Dé...</h1>
+        <h2>Face: {this.state.face !== null ? this.state.face : "..."}</h2>
+        <img src={this.getImage()} style={styleImage} alt="Face de dé" />
+        <h2>Nombre d'essais: {this.state.compteur}</h2>
+        <button onClick={() => this.jouer()} disabled={this.state.fin}>
+          Jouer
+        </button>
+        <p>{message}</p>
+        <button onClick={() => this.initialiser()}>Initialiser</button>
+      </div>
+    );
+  }
+}

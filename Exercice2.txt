@@ -1,0 +1,65 @@
+App.js :
+
+import React from "react";
+import Header from "./Header";
+import Presentation from "./Presentation";
+import ReactDOM from "react-dom";
+
+function App() {
+  return (
+    <div>
+      <Header />
+      <br />
+      <Presentation nom="Rami" prenom="Ahmed" />
+    </div>
+  );
+}
+
+
+ReactDOM.render(<App />, document.getElementById('root'));
+
+export default App;
+
+Header.js :
+
+import React from "react";
+export default function Header(){
+const titre="Application mon premier fonctionnel composant"
+return (
+<div>
+<h1>ici afficher le titre</h1>
+<hr/>
+</div>
+)
+}
+
+index.js :
+
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
+
+const root = ReactDOM.createRoot(document.getElementById('root')); // Use createRoot instead of ReactDOM.render
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+reportWebVitals();
+
+Presentation.js :
+
+import React from 'react';
+
+export default function Presentation(props) {
+  return (
+    <div>
+      <h2>Salut {props.nom} {props.prenom}</h2>
+    </div>
+  );
+}
+
+

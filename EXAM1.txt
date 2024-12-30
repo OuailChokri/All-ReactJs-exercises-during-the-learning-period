@@ -1,0 +1,145 @@
+App.js : 
+
+import React from "react";
+import ListeVoyages from './components/ListeVoyages';
+import DetailsVoyage from './components/DetailsVoyage';
+import { BrowserRouter,Routes,Route } from "react-router-dom";
+
+const App = () => {
+
+  return(
+    <BrowserRouter>
+    <Routes>
+      <Route path="/" element={<ListeVoyages/>}/>
+      <Route path="/details/:id" element={<DetailsVoyage/>}/>
+      <Route/>
+    </Routes>
+    </BrowserRouter>
+  );  
+};
+
+export default App;
+
+
+ListVoyages.js : 
+
+
+import React from "react";
+import { Link } from "react-router-dom";
+import product1 from '../images/product1.jpg';
+import product2 from '../images/product2.jpg';
+import product3 from '../images/product3.jpg';
+import product4 from '../images/product4.jpg';
+
+const ListeVoyages =()=>{
+  const products = [
+    {
+      id: 1,
+      intitule: 'Istanbul La magnifique',
+      prix: '8900 DH',
+      source: product1,
+      description: 'Explorez la magnifique ville d\'Istanbul avec notre voyage exclusif.'
+    },
+    {
+      id: 2,
+      intitule: 'Découverte de dakhla',
+      prix: '4500 DH',
+      source: product2,
+      description: 'Partez à la découverte de la belle ville de Dakhla avec notre offre spéciale.'
+    },
+    {
+      id: 3,
+      intitule: 'Safari a Kenya',
+      prix: '25000 DH',
+      source: product3,
+      description: 'Vivez l\'aventure ultime avec notre safari exclusif au Kenya.'
+    },
+    {
+      id: 4,
+      intitule: 'Tour a marrakesh',
+      prix: '19000 DH',
+      source: product4,
+      description: 'Explorez la ville animée de Marrakech avec notre visite guidée.'
+    },
+  ];
+
+  return(
+    <div>
+      {products.map((product)=>{
+        return(
+          <div key={product.id}>
+            <img src={product.source} alt={product.source} style={{width : '200px'}}/>
+            <p>{product.intitule}</p>
+            <p>{product.prix}</p>
+            <Link to={`/details/${product.id}`}>
+            <button>Details</button>
+            </Link>
+          </div>
+        );
+})};
+    </div>
+  );
+};
+
+export default ListeVoyages;
+
+
+DetailsVoyage.js : 
+
+
+import React from "react";
+import { useParams } from "react-router-dom";
+import product1 from '../images/product1.jpg';
+import product2 from '../images/product2.jpg';
+import product3 from '../images/product3.jpg';
+import product4 from '../images/product4.jpg';
+
+const Details =()=>{
+  const {id} = useParams();
+  const products = [
+    {
+      id: 1,
+      intitule: 'Istanbul La magnifique',
+      prix: '8900 DH',
+      source: product1,
+      description: 'Explorez la magnifique ville d\'Istanbul avec notre voyage exclusif.'
+    },
+    {
+      id: 2,
+      intitule: 'Découverte de dakhla',
+      prix: '4500 DH',
+      source: product2,
+      description: 'Partez à la découverte de la belle ville de Dakhla avec notre offre spéciale.'
+    },
+    {
+      id: 3,
+      intitule: 'Safari a Kenya',
+      prix: '25000 DH',
+      source: product3,
+      description: 'Vivez l\'aventure ultime avec notre safari exclusif au Kenya.'
+    },
+    {
+      id: 4,
+      intitule: 'Tour a marrakesh',
+      prix: '19000 DH',
+      source: product4,
+      description: 'Explorez la ville animée de Marrakech avec notre visite guidée.'
+    },
+  ];
+
+  const productSelected = products.find((product)=>product.id === parseInt(id));
+
+  if (productSelected.length < 0){
+    return 'Not available';
+  };
+
+  return (
+    <div>
+      <h1>voyage nombre {productSelected.id}</h1>
+      <img src={productSelected.source} style={{width : '200px'}} />
+      <p>{productSelected.description}</p>
+      <p>{productSelected.prix}</p>
+    </div>
+  );
+}
+export default Details;

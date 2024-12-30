@@ -1,0 +1,67 @@
+nombre.js : 
+import {React} from 'react';
+import { useDispatch,useSelector } from 'react-redux';
+import { Increment,Decrement } from './reducer';
+
+const Nombre =()=>{
+    const dispatch = useDispatch();
+    const nombre = useSelector((state)=>state.nombre);
+    const increment = ()=>{
+        dispatch(Increment());
+    };
+    const decrement =()=>{
+        dispatch(Decrement());
+    };
+    return (
+        <div>
+            <p>{nombre}</p>
+            <button onClick={()=>increment()}>increment</button>
+            <button onClick={()=>decrement()}>decrement</button>
+        </div>
+    );
+
+};
+export default Nombre;
+
+
+reducer.js : 
+import { createSlice } from "@reduxjs/toolkit";
+
+const counterSlice = createSlice({
+    name: 'counter',
+    initialState: {
+        nombre: 0
+    },
+    reducers: {
+        // Les reducers doivent retourner un nouvel état, pas modifier l'état actuel
+        Increment: state => {
+            state.nombre += 1; // Utilisez += pour incrémenter l'état de manière immuable
+        },
+        Decrement: state => {
+            state.nombre -= 1; // Utilisez -= pour décrémenter l'état de manière immuable
+        }
+    }
+});
+
+export const { Increment, Decrement } = counterSlice.actions;
+export default counterSlice.reducer;
+
+index.js : 
+
+import React from "react";
+import { createRoot } from "react-dom";  
+import App from "./App";
+import { Provider } from "react-redux";
+import { configureStore } from "@reduxjs/toolkit";
+import reducer from "./reducer";
+
+const store = configureStore({
+  reducer : reducer
+})
+const root = createRoot(document.getElementById("root"));  
+root.render(
+  <Provider store={store}>
+    <App/>
+  </Provider>
+);
+

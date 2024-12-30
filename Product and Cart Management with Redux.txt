@@ -1,0 +1,173 @@
+import {React, useState} from 'react';
+import {useDispatch} from 'react-redux';
+import {useNavigate,Link} from 'react-router-dom';
+import {addProduct,deleteProduct} from '../store/productsSlice';
+
+const Administarteur = () => {
+  const disptach = useDispatch();
+  const navigate = useNavigate();
+  const [newProduit,setnewProduit] = useState({name : '', price : '', brand : '', image : null});
+  const [productTodelete,setproductToDelete] = useState('');
+
+  const handleimageChange = (e) =>{
+    const file = e.target.files[0];
+    setnewProduit({...newProduit, image : file.name});
+  }
+
+  const handleAddProduct = () =>{
+    disptach(addProduct(newProduit));
+    navigate('/');
+  }
+  
+  const handleDeleteProduct = () =>{
+    disptach(deleteProduct(productTodelete));
+    navigate('/');
+  }
+  return (
+    <div>
+      <div>
+        <h1>Ajouter un Produit</h1><br/>
+        <input type='text' placeholder='Nom de Produit' onChange={(e)=>setnewProduit({...newProduit, name : e.target.value})}/>
+        <input type='text' placeholder='Prix de Produit' onChange={(e)=>setnewProduit({...newProduit, price : e.target.value})}/>
+        <input type='text' placeholder='Marque de Produit' onChange={(e)=>setnewProduit({...newProduit,brand : e.target.value})}/>
+        <input type='file' onChange={handleimageChange}/>
+        <button onClick={handleAddProduct} >Ajouter</button>
+      </div>
+      <div>
+        <h1>Supprimer un Produit sur ID</h1><br/>
+        <input type='text' placeholder='ID de Produit à supprimer' onChange={(e)=>setproductToDelete(e.target.value)}/>
+        <button onClick={handleDeleteProduct} >Supprimer</button>
+      </div>
+      <button>
+        <Link to='/'>Retour à la liste des Produit</Link>
+      </button>
+    </div>
+  );
+};
+
+export default Administarteur;
+
+
+---------------
+
+import {React} from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import {removefromCart} from '../store/cartSlice';
+import {createImageUrl} from '../components/utils';
+import {useNavigate, Link} from 'react-router-dom';
+
+const Cart = () =>{
+  const disptach = useDispatch();
+  const navigate = useNavigate();
+  const cartItems = useSelector((state)=>state.cart);
+  const products = useSelector((state)=>state.products);
+
+  const handleRemove = (productId) => {
+    disptach(removefromCart(productId))
+
+    if (cartItems.length === 1){
+      navigate('/');
+    }
+  }
+  
+  const handleCommande = () => {
+    const confirmation = window.confirm('Order Placed Successfully');
+    if (confirmation){
+      console.log('Order confirmed !');
+    }
+    else {
+      console.log('Order cancelled !!');
+    }
+  }
+  return (
+    <div>
+      <h1>Panier</h1>
+      {cartItems.map((cartItem)=>{
+        const product = products.find((p)=>p.id === cartItem.id);
+        return (
+          <div key={cartItem.id} className="cart-item">
+            <img src={createImageUrl(product.image)} alt={`Product ${product.id}`} />
+            <div className="product-details">
+              <p className="product-name">Nom du Produit: {product.name}</p>
+              <p className="product-price">Prix du Produit: {product.price}</p>
+              <p className="product-brand">Marque du Produit: {product.brand}</p>
+              <p className="product-quantity">Quantité: {cartItem.quantity}</p>
+              <button className='btn-s' onClick={() => handleRemove(cartItem.id)}>Supprimer</button>
+            </div>
+          </div>
+        );
+      })}
+      <div>
+        <Link to='/' >
+        <button>Retour a la liste des Produit</button>
+        </Link>
+        <button onClick={handleCommande} >Commander</button>
+      </div>
+    </div>
+  );
+}; 
+
+export default Cart;
+
+-------------------------
+
+
+
+import {createSlice} from '@reduxjs/toolkit';
+
+const productsSlice = createSlice({
+  name : 'products',
+  initialState : [
+    { id: 1, name: 'Iphon 15', price: '15000 DH', brand: 'Apple', image: 'product1.jpg' },
+    { id: 2, name: 'Iphon 8 Plus', price: '6000 DH', brand: 'Apple', image: 'product2.jpg' },
+  ],
+  reducers :  {
+    addProduct : (state, action) =>{
+      state.push({...action.payload,id : state.length + 1});
+    },
+    deleteProduct : (state, action) =>{
+      return state.filter((item)=>item.id !== parseInt(action.payload));
+    }
+  }
+});
+
+export const {addProduct, deleteProduct} = productsSlice.actions;
+export default productsSlice.reducer;
+
+
+
+
+
+
+
+
+
+
+
+
+-----------------------
+
+
+import {createSlice} from '@reduxjs/toolkit';
+
+const Cart = createSlice({
+  name : 'cart',
+  initialState : [],
+  reducers : {
+    addToCart : (state, action)=> {
+      const exitingitem = state.find((item)=>item.id === action.payload);
+      if (exitingitem){
+        exitingitem.quantity += 1;
+      }
+      else {
+        state.push({id : action.payload, quantity : 1});
+      }
+    },
+    removefromCart : (state, action)=>{
+      return state.filter((item)=>item.id !== action.payload)
+    }
+  }
+});
+
+export const {addToCart, removefromCart} = Cart.actions;
+export default Cart.reducer;

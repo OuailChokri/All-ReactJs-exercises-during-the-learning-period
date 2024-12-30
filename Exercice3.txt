@@ -1,0 +1,87 @@
+products.js : 
+import React from 'react';
+import Product from './Product';
+import thumbnail1 from './HP16D0195NF.jpg'; // Nom de variable différent pour chaque image
+import thumbnail2 from './HP14424U3EA.jpg';
+import thumbnail3 from './NXATHEF002.jpg';
+import thumbnail4 from './HUA6901443442959.jpg';
+
+const products = [
+  {
+    id: 1,
+    title: 'PC Portable Gamer HP VICTUS',
+    price: '7490 DH',
+    thumbnail: thumbnail1, // Utilisez la variable importée pour l'image
+  },
+  {
+    id: 2,
+    title: 'PC Portable Gamer HP VICTUS',
+    price: '2190 DH',
+    thumbnail: thumbnail2,
+  },
+  {
+    id: 3,
+    title: 'Pc Portable Chromebook Acer',
+    price: '3640 DH',
+    thumbnail: thumbnail3,
+  },
+  {
+    id: 4,
+    title: 'PC Portable - HUAWEI',
+    price: '1270 DH',
+    thumbnail: thumbnail4,
+  },
+];
+
+const Products = () => {
+  return (
+    
+    <div className="row">
+      {products.map((product) => (
+        <Product
+          key={product.id}
+          title={product.title}
+          price={product.price}
+          thumbnail={product.thumbnail}
+        />
+      ))}
+    </div>
+  );
+};
+
+export default Products;
+
+
+
+product.js : 
+
+// Product.js
+import React from 'react';
+
+const Product =(props)=> (
+  <div className="col">
+    <div className="card shadow-sm">
+      <img
+        className="bd-placeholder-img card-img-top"
+        src={props.thumbnail}
+        alt={props.title}
+      />
+      <div className="card-body">
+        <p className="card-title">{props.title}</p>
+        <p className="card-text">{props.price}</p>
+        <div className="d-flex justify-content-between alignitems-center">
+          <div className="btn-group">
+            <button
+              type="button"
+              className="btn btn-sm btn-outline-secondary"
+            >
+              Ajouter au panier
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+export default Product;

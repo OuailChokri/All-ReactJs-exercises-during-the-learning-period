@@ -1,0 +1,101 @@
+App.js : 
+
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import ListUser from "./ListUser";
+
+export default function App() {
+  const [utilisateurs, setUtilisateurs] = useState([]);
+
+  useEffect(() => {
+    axios.get("https://jsonplaceholder.typicode.com/users")
+      .then(response => {
+        setUtilisateurs(response.data);
+      })
+      .catch(error => {
+        // Handle any errors that occur during the API request
+        console.error("Error fetching data:", error);
+      });
+  }, []);
+  
+
+  return (
+    <div>
+      {utilisateurs ? (
+        <div>
+          <ListUser utilisateurs={utilisateurs} />
+        </div>
+      ) : "pas d'utilisateurs!!!!"}
+    </div>
+  );
+}
+
+
+User.js :  
+
+
+import React, { useState } from "react";
+import axios from 'axios';
+
+export default function User(props) {
+  const [posts, setPosts] = useState([]);
+
+  function HandelPosts() {
+    axios.get('https://jsonplaceholder.typicode.com/posts')
+    .then((response)=>{
+        const filteredPosts = response.data.filter((post)=> post.userId == props.user.id);
+        setPosts(filteredPosts);
+        props.handleChangeActiveId(props.user.id);
+    })
+    .catch((error) => {
+        console.error("Error fetching posts:", error);
+      });
+    
+  }
+
+  return (
+    <div className="child" key={props.user.id}>
+      <h3>nom: {props.user.name} {props.user.username}</h3>
+      <p>email:{props.user.email}</p>
+      <p>ville:{props.user.address.city} rue:{props.user.address.street}</p>
+      <button onClick={HandelPosts}>details posts</button>
+      {props.activeId == props.user.id && (
+        <div>
+          <h5 style={{ color: "green" }}>nombre des posts: {posts.length}</h5>
+          {posts.map((post) => {
+            return (
+              <div className="post" key={post.id}>
+                <h5>{post.title}</h5>
+                <p>{post.body}</p>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+ListUser.js : 
+
+
+import React, { useState } from "react";
+import User from "./User";
+
+export default function ListUser(props) {
+  const [activeId, setActiveId] = useState(1);
+  const users = props.utilisateurs;
+
+  function handleChangeActiveId(id) {
+    setActiveId(id);
+  }
+
+  return (
+    <div className="App">
+      <h1>nombre d'utilisateurs: {props.utilisateurs.length}</h1>
+      {users.map((user) => {
+        return <User user={user} activeId={activeId}  handleChangeActiveId={handleChangeActiveId} />;
+      })}
+    </div>
+  );
+}

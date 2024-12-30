@@ -1,0 +1,190 @@
+App.js : 
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import './App.css';
+import AddUser from './Composants/AddUser';
+import UpdateUser from './Composants/UpdateUser';
+import UserList from './Composants/UserList';
+function App() {
+  return (
+    <div style={{paddingLeft:40}}>
+      <h1>CRUD REACT-REDUX Example 1</h1>
+      <BrowserRouter>
+        <Routes>
+          <Route path='/' element={<UserList />} />
+          <Route path='/add-user' element={<AddUser />} />
+          <Route path='/update-user/:id' element={<UpdateUser />} />
+        </Routes>
+      </BrowserRouter>
+    </div>
+  );
+}
+
+export default App;
+index.js : 
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+import { Provider } from 'react-redux';
+import { legacy_createStore } from 'redux';
+import reducer from './Config/reducer';
+const store = legacy_createStore(reducer)
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <Provider store={store}>
+    <App />
+  </Provider>
+);
+actions.js:
+export const addUserAction = (user) => {
+    return {type:"Add_user", payload:user}
+}
+export const updateUserAction = (newuser) => {
+    return {type:"Update_user", payload:newuser}
+}
+export const deleteUserAction = (id) => {
+    return {type:"Delete_user", payload:id}
+}
+reducer.js:
+const initialState = {
+    users:[ 
+        { id: 1, name: "Mohamed Allaoui", email: "allaoui@gmail.com" }, 
+        { id: 2, name: "Hind Benanni", email: "benani@gmail.com" }
+    ] 
+};
+const reducer = (state=initialState, action) => {
+    switch(action.type) {
+        case "Add_user":
+            return {...state, users:[...state.users, action.payload]}
+        case "Update_user":
+            const user = state.users.find((u)=>u.id===parseInt(action.payload.id))
+            console.log(user)
+            if (user) {
+                user.name = action.payload.name
+                user.email = action.payload.email
+            }
+            return state
+        case "Delete_user":
+            return {...state, users:[...state.users.filter((u)=>u.id!==parseInt(action.payload))]}
+        default:
+            return state
+    }
+}
+export default reducer
+AddUser.js:
+import { useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { addUserAction } from "../Config/actions"
+import { useNavigate } from "react-router-dom";
+function AddUser() {
+    const count = useSelector(data=>data.users.length);
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const dispatch = useDispatch();
+    const navigate = useNavigate()
+    const handleClick = () => {
+        dispatch(addUserAction({
+            id:count+1,
+            name:name,
+            email:email
+        }))
+        navigate('/')
+    }
+    return (
+        <form>
+            <label>Name</label>
+            <input type="text" value={name} onChange={(e)=>setName(e.target.value)} />
+            <label>Email</label>
+            <input type="email" value={email} onChange={(e)=>setEmail(e.target.value)} />
+            <button onClick={handleClick}>Enregistrer</button>
+        </form>
+    )
+}
+export default AddUser
+UpdateUser.js:
+import { useParams } from "react-router-dom"
+import { useDispatch, useSelector } from "react-redux"
+import { updateUserAction } from "../Config/actions"
+import { useNavigate } from "react-router-dom";
+import { useState } from "react"
+
+function UpdateUser() {
+    const {id} = useParams()
+    
+    const user = useSelector(data=>data.users.find((u)=>u.id===parseInt(id)));
+    const [name, setName] = useState(user.name);
+    const [email, setEmail] = useState(user.email);
+    const dispatch = useDispatch();
+    const navigate = useNavigate()
+    const handleClick = () => {
+        dispatch(updateUserAction({
+            id:id,
+            name:name,
+            email:email
+        }))
+        navigate('/')
+    }
+    return (
+        <form>
+            <label>Name</label>
+            <input type="text" value={name} onChange={(e)=>setName(e.target.value)} />
+            <label>Email</label>
+            <input type="email" value={email} onChange={(e)=>setEmail(e.target.value)} />
+            <button onClick={handleClick}>Enregistrer</button>
+        </form>
+    )
+}
+export default UpdateUser
+ListUser.js:
+import { useSelector, useDispatch } from "react-redux"
+import { Link } from "react-router-dom"
+import {deleteUserAction} from '../Config/actions'
+function UserList() {
+    const users = useSelector((data)=>data.users);
+    const dispatch = useDispatch();
+    const handleDelete = (id) => {
+        dispatch(deleteUserAction(id))
+    }
+    return (
+        <div>
+            <p>
+                <Link to="/add-user">
+                    <button>Add user</button>
+                </Link>
+            </p>
+            <table>
+                <thead>
+                    <tr>
+                        <td>ID</td>
+                        <td>Name</td>
+                        <td>Email</td>
+                        <td>Action</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {users.map((user, index)=> {
+                            return (
+                            <tr key={index}>
+                                <td>{user.id}</td>
+                                <td>{user.name}</td>
+                                <td>{user.email}</td>
+                                <td>
+                                    <Link to={`/update-user/${user.id}`}>
+                                        <button>Edit</button>
+                                    </Link>
+                                    <button onClick={() => handleDelete(user.id)}>Delete</button>
+                                </td>
+                            </tr>
+                            )
+                        }) }
+                </tbody>
+            </table>
+        </div>
+    )
+}
+export default UserList
+
+
+Question : 
+
+why in if i delete /:id   in this exemple in app <Route path='/update-user' element={<UpdateUser />} />
+and supprime user.id in <Link to={`/update-user/${user.id}`}> just affiche page de updatelist without label and input pour change why 

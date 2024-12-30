@@ -1,0 +1,79 @@
+Opp.js :
+
+ import React, { useState } from 'react';
+import ChercheBar from './ChercheBar';
+import ResultatList from './ResultatList';
+
+const list = [
+  { nom: "banane", type: "fruit" },
+  // ... (other items in the list)
+];
+
+export default function App() {
+  const [type, setType] = useState('');
+  const [resultas, setResultas] = useState([]);
+
+  function onChercheSubmitApp(type) {
+    setType(type);
+    setResultas(list.filter((item) => item.type.toUpperCase() === type));
+    
+  }
+
+  return (
+    <div className='App'>
+      <h1>Composant App</h1>
+      <ChercheBar onChercheSubmit={onChercheSubmitApp} />
+      <div>
+        <p>le type:<span style={{ color: "rgb(36, 44, 33)", fontWeight: "bold" }}>{type}</span></p>
+      </div>
+      <ResultatList resultats={resultas} />
+    </div>
+  );
+}
+2. ResultatList.js :
+
+ import React from "react";
+
+export default function ResultatList(props) {
+  return (
+    <div className="Child">
+      <h1>composant ResultatList</h1>
+      {props.resultats.length === 0 ? (
+        <p>pas de résultats</p>
+      ) : (
+        <div className="list">
+          <ul>
+            {props.resultats.map((item) => {
+              return <li key={item.nom}>{item.nom}</li>;
+            })}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+3.ChercheBar.js : 
+
+import React, { useState } from "react";
+
+export default function ChercheBar(props) {
+  const [term, setTerm] = useState('');
+
+  function onChercheSubmitBar(event) {
+    event.preventDefault();
+    props.onChercheSubmit(term);
+  }
+
+  return (
+    <div className="Child">
+      <form onSubmit={(event) => onChercheSubmitBar(event)}>
+        <h2>composant ChercheBar</h2>
+        <div>
+          <label>Entrer le mot clé de recherche:</label>
+          <input type="text" value={term} onChange={(event) => setTerm(event.target.value.toUpperCase())} />
+        </div>
+        <button type="submit">chercher</button>
+      </form>
+    </div>
+  );
+}

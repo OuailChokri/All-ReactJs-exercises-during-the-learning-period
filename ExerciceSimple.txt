@@ -1,0 +1,139 @@
+
+
+store.js - Contient le state, les actions et le reducer.
+javascript
+Copy code
+// store.js
+import { createStore } from "redux";
+
+// State initial
+const initialState = {
+  player1: 0,
+  player2: 0,
+  advantage: null,
+  winner: null,
+  playing: true,
+  history: [],
+};
+
+// Actions creators
+export const playPause = () => ({ type: "playPause" });
+export const restartGame = () => ({ type: "restart" });
+export const pointScored = (player) => ({
+  type: "pointScored",
+  payload: { player: player },
+});
+
+function reducer(state = initialState, action) {
+  if (action.type === "restart") {
+    return initialState;
+  }
+
+  if (action.type === "playPause") {
+    if (state.winner) {
+      return state;
+    }
+    return {
+      ...state,
+      playing: !state.playing,
+    };
+  }
+
+  if (action.type === "pointScored") {
+    const player = action.payload.player;
+    const otherPlayer = player === "player1" ? "player2" : "player1";
+
+    if (state.winner) {
+      return state;
+    }
+    if (state.playing === false) {
+      return state;
+    }
+
+    const currentPlayerScore = state[player];
+
+    if (currentPlayerScore <= 15) {
+      return { ...state, [player]: currentPlayerScore + 15 };
+    }
+    if (currentPlayerScore === 30) {
+      return { ...state, [player]: 40 };
+    }
+    if (currentPlayerScore === 40) {
+      if (state[otherPlayer] !== 40) {
+        return { ...state, winner: player, history: [...state.history, player] };
+      }
+      if (state.advantage === player) {
+        return { ...state, winner: player, history: [...state.history, player] };
+      }
+      if (state.advantage === null) {
+        return { ...state, advantage: player };
+      }
+      return { ...state, advantage: null };
+    }
+  }
+
+  return state;
+}
+
+export const store = createStore(reducer);
+index.css - Fichier CSS.
+css
+Copy code
+/* index.css */
+/* Styles CSS */
+/* ... (styles que vous avez fournis) ... */
+App.js - Composant principal.
+javascript
+Copy code
+// App.js
+import React from "react";
+import { Provider } from "react-redux";
+import { store } from "./store";
+import Display from "./Display";
+import PointScoredButton from "./PointScoredButton";
+import ResetButton from "./ResetButton";
+import PlayPauseButton from "./PlayPauseButton";
+import PlayerScore from "./PlayerScore";
+
+function App() {
+  return (
+    <Provider store={store}>
+      <div>
+        <Display />
+        <div className="buttons-row">
+          <PointScoredButton playerId="player1">Point Joueur 1</PointScoredButton>
+          <PointScoredButton playerId="player2">Point Joueur 2</PointScoredButton>
+        </div>
+        <div className="buttons-row">
+          <ResetButton />
+          <PlayPauseButton />
+        </div>
+        <PlayerScore playerId="player1" />
+        <PlayerScore playerId="player2" />
+      </div>
+    </Provider>
+  );
+}
+
+export default App;
+Composants pour l'affichage et les boutons.
+Display.js, PointScoredButton.js, ResetButton.js, PlayPauseButton.js : Ces fichiers contiennent les composants pour l'affichage et les boutons, qui se connectent à Redux pour gérer le score du match.
+PlayerScore.js - Composant pour afficher le nombre de matchs gagnés par chaque joueur.
+javascript
+Copy code
+// PlayerScore.js
+import React from "react";
+import { useSelector } from "react-redux";
+
+const PlayerScore = ({ playerId }) => {
+  const history = useSelector((state) => state.history);
+  const playerScore = history.filter((player) => player === playerId).length;
+
+  return (
+    <div className="player-games">
+      <p>{`Matchs gagnés par Joueur ${playerId.slice(-1)}: ${playerScore}`}</p>
+    </div>
+  );
+};
+
+export default PlayerScore;

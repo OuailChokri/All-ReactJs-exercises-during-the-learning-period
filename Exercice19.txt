@@ -1,0 +1,92 @@
+index.js:
+
+jsx
+Copy code
+import React from "react";
+import ReactDOM from "react-dom";
+import AppCompteur from "./components/AppCompteur";
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<AppCompteur />);
+Compteur.js:
+
+jsx
+Copy code
+import React from 'react';
+
+export default class Compteur extends React.Component {
+  constructor(props) {
+    console.log("constructeur");
+    super(props);
+    this.state = {
+      compteur: 0,
+    };
+    this.incrementer = () => {
+      this.setState({ compteur: this.state.compteur + 1 });
+    };
+    this.decrementer = () => {
+      this.setState({ compteur: this.state.compteur - 1 });
+    };
+  }
+
+  componentDidMount() {
+    // This method is executed after render
+    console.log("Component Did mount");
+    console.log('--------------------');
+  }
+
+  componentDidUpdate() {
+    // This method is executed after an update via setState
+    console.log("Component Did update");
+    console.log('--------------------');
+  }
+
+  componentWillUnmount() {
+    console.log("Component is unmounted");
+  }
+
+  render() {
+    console.log('Render');
+    return (
+      <div style={{ background: "yellow" }}>
+        <h3>Compteur Component</h3>
+        <p>Counter: {this.state.compteur}</p>
+        <button onClick={this.incrementer}>Increment</button>
+        <button onClick={this.decrementer}>Decrement</button>
+      </div>
+    );
+  }
+}
+AppCompteur.js:
+
+jsx
+Copy code
+import React from 'react';
+import Compteur from './Compteur';
+
+export default class AppCompteur extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { isMounted: true };
+    this.mount = () => {
+      this.setState({ isMounted: true });
+    };
+    this.unmount = () => {
+      this.setState({ isMounted: false });
+    };
+  }
+
+  render() {
+    return (
+      <div>
+        <button onClick={this.mount} disabled={this.state.isMounted}>
+          Mount
+        </button>
+        <button onClick={this.unmount} disabled={!this.state.isMounted}>
+          Unmount
+        </button>
+        {this.state.isMounted ? <Compteur /> : null}
+      </div>
+    );
+  }
+}

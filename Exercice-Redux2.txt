@@ -1,0 +1,149 @@
+// App.js
+import React from "react";
+import Articles from "./containers/Articles";
+
+function App() {
+  return <Articles />;
+}
+
+export default App;
+
+// Articles.js
+import React from "react";
+import { connect } from "react-redux";
+import Article from "../components/Article";
+import AddArticle from "../components/AddArticle";
+import { addArticle } from "../store/actionCreators";
+
+const Articles = ({ articles, saveArticle }) => (
+  <div>
+    <AddArticle saveArticle={saveArticle} />
+    {articles.map((article) => (
+      <Article key={article.id} article={article} />
+    ))}
+  </div>
+);
+
+const mapStateToProps = (state) => {
+  return {
+    articles: state.articles,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    saveArticle: (article) => dispatch(addArticle(article)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Articles);
+
+// AddArticle.js
+import React, { useState } from "react";
+
+const AddArticle = ({ saveArticle }) => {
+  const [article, setArticle] = useState();
+
+  const handleArticleData = (e) => {
+    setArticle({
+      article,
+      [e.target.id]: e.target.value,
+    });
+  };
+
+  const addNewArticle = (e) => {
+    e.preventDefault();
+    saveArticle(article);
+  };
+
+  return (
+    <form onSubmit={addNewArticle} className="add-article">
+      <input
+        type="text"
+        id="title"
+        placeholder="Title"
+        onChange={handleArticleData}
+      />
+      <input
+        type="text"
+        id="body"
+        placeholder="Body"
+        onChange={handleArticleData}
+      />
+      <button>Add article</button>
+    </form>
+  );
+};
+
+export default AddArticle;
+
+// Article.js
+import React from "react";
+
+const Article = ({ article }) => (
+  <div className="article">
+    <h1>{article.title}</h1>
+    <p>{article.body}</p>
+  </div>
+);
+
+export default Article;
+
+// index.js
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+import { createStore } from "redux"
+import { Provider } from "react-redux"
+import reducer from "./store/reducer"
+
+const store = createStore(reducer)
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <Provider store={store}>
+    <App />
+  </Provider>
+);
+
+// reducer.js
+import * as actionTypes from "./actionTypes"
+
+const initialState = {
+  articles: [
+    { id: 1, title: "post 1", body: "Quisque cursus, metus vitae pharetra" },
+    { id: 2, title: "post 2", body: "Quisque cursus, metus vitae pharetra" },
+  ],
+}
+
+const reducer = (state = initialState, action) => {
+  switch (action.type) {
+    case actionTypes.ADD_ARTICLE:
+      const newArticle = {
+        id: Math.random(),
+        title: action.article.title,
+        body: action.article.body,
+      };
+      return {
+        ...state,
+        articles: state.articles.concat(newArticle),
+      };
+    default:
+      return state;
+  }
+}
+
+export default reducer;
+
+// actionTypes.js
+export const ADD_ARTICLE = "ADD_ARTICLE";
+
+// actionCreators.js
+import * as actionTypes from "./actionTypes"
+
+export const addArticle = (article) => {
+  return {
+    type: actionTypes.ADD_ARTICLE,
+    article,
+  };
+}

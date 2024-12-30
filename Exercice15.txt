@@ -1,0 +1,105 @@
+import React from "react";
+import ReactDOM, { createRoot } from 'react-dom/client';
+import reportWebVitals from './reportWebVitals';
+import './index.css';
+
+
+export default class Clients extends React.Component {
+    constructor(props){
+        super(props);
+        this.state = {
+            ListeClients: [
+              { id: 1, nom: "CHAKIRI ALI", ville: "NADOR", dateN: "22/01/2004", genre: "Homme", interet: "Sport,Internet" },
+              { id: 2, nom: "OUAFI Fatima", ville: "RABAT", dateN: "02/03/2007", genre: "Femme", interet: "Voyage,Internet,Sport" },
+              { id: 3, nom: "FATIHI Laila", ville: "FES", dateN: "17/11/2005", genre: "Femme", interet: "Sport" }
+            ],
+            Tnom: '',
+            Tville: '',
+            TN: '',
+            Tgenre: 'Homme',
+            Tinteret: '',
+            Tid: 4
+          }
+    }
+    ajouterclient =(e)=>{
+        e.preventDefault();
+        const {Tnom,Tville,TN,Tgenre,Tinteret,Tid} = this.state;
+        if (Tnom !== ''){
+            const newClient = {
+                id : Tid,
+                nom : Tnom,
+                ville : Tville,
+                dateN : TN,
+                genre : Tgenre,
+                interet : Tinteret
+            }
+            this.setState((prevState)=>({
+                ListeClients : [...prevState.ListeClients,newClient],
+                Tid : Tid +1,
+                Tnom : '',
+                Tville : '',
+                Tgenre : 'Homme',
+                TN : '',
+                Tinteret : ''
+            }))
+        }
+    }
+    supprimer =(id1)=>{
+        const UpdatedList = this.state.ListeClients.filter((client)=>client.id !== id1);
+        this.setState({ListeClients : UpdatedList});
+    }
+    render(){
+        const Lclient = this.state.ListeClients.map((client)=>(
+            <tr key={client.id} >
+                <td>{client.id}</td>
+                <td>{client.nom}</td>
+                <td>{client.ville}</td>
+                <td>{client.dateN}</td>
+                <td>{client.genre}</td>
+                <td>{client.interet}</td>
+                <td><button onClick={()=>this.supprimer(client.id)} >delete</button></td>
+            </tr>
+        ));
+    return(
+    <div>
+        <form onSubmit={this.ajouterclient} >
+            Nom : <input type="text" value={this.state.Tnom} onChange={(e)=>this.setState({Tnom : e.target.value})}/><br/>
+            Ville : <select name='ville' onChange={(e)=>this.setState({Tville : e.target.value})}>
+                <option value="Nador">Nador</option>
+                <option value='fes'>fes</option>
+                <option value='meknas'>meknas</option>
+                    </select><br/>
+            Date de Naissance : <input type='date' value ={this.state.TN} onChange={(e)=>this.setState({TN : e.target.value})} /><br/>
+            Genre : <input type="radio" name="genre" value='homme' onChange={(e)=>this.setState({Tgenre : e.target.value})}/>homme
+                    <input type="radio" name="genre" value='femme' onChange={(e)=>this.setState({Tgenre : e.target.value})}/>femme <br/>
+            Interet : <input type="checkbox" value="sport" onChange={(e)=>this.setState({Tinteret : e.target.value})}/>Sport
+                      <input type="checkbox" value="musique" onChange={(e)=>this.setState({Tinteret : e.target.value})}/>musique
+                      <input type="checkbox" value="lecture" onChange={(e)=>this.setState({Tinteret : e.target.value})}/>lecture
+            <button type="submit">Ajouter Client</button>
+        </form>
+        <h1>Liste des Clients</h1>
+        <table border="1" >
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nom</th>
+                <th>Ville</th>
+                <th>Date Naissance</th>
+                <th>Genre</th>
+                <th>interet</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {Lclient}
+            </tbody>
+        </table>
+    </div>
+    );
+    }
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<Clients/>);
+
+reportWebVitals();

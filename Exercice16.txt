@@ -1,0 +1,129 @@
+import React, { useState } from 'react';
+import './App.css';
+
+function App() {
+  const [name, setName] = useState('');
+  const [date_naissance, setDateNaissance] = useState('');
+  const [ville, setVille] = useState('');
+  const [genre, setGenre] = useState('Homme');
+  const [loisirs, setLoisirs] = useState([]);
+  const [password, setPassword] = useState('');
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    setIsSubmitted(true);
+  };
+
+  const renderSuccessMessage = () => (
+    <div>
+      Je suis {name} né le {date_naissance} à {ville} et mes loisirs sont : {loisirs.join(', ')}
+    </div>
+  );
+
+  const renderForm = (
+    <div className="registration-form">
+      <div className="title">Inscription</div>
+      <div className="form">
+        <form onSubmit={handleSubmit}>
+          <div className="input-container">
+            <label>Nom </label>
+            <input type="text" name="name" required onChange={(e) => setName(e.target.value)} />
+          </div>
+          <div className="input-container">
+            <label>Mot de passe </label>
+            <input type="password" name="password" required onChange={(e) => setPassword(e.target.value)} />
+          </div>
+          <div className="input-container">
+            <label>Date de Naissance </label>
+            <input type="date" name="date_naissance" required onChange={(e) => setDateNaissance(e.target.value)} />
+          </div>
+          <div className="input-container">
+            <label>Ville </label>
+            <select name="ville" onChange={(e) => setVille(e.target.value)}>
+              <option value="France">France</option>
+              <option value="Maroc">Maroc</option>
+            </select>
+          </div>
+          <div className="input-container">
+            <label>Genre </label>
+            <input type="radio" name="genre" value="Homme" onChange={(e) => setGenre(e.target.value)} checked={genre === 'Homme'} />
+            Homme
+            <input type="radio" name="genre" value="Femme" onChange={(e) => setGenre(e.target.value)} checked={genre === 'Femme'} />
+            Femme
+          </div>
+          <div className="input-container">
+            <label>Loisirs </label>
+            <input type="checkbox" name="loisirs" value="Sport" onChange={handleLoisirs} />
+            Sport
+            <input type="checkbox" name="loisirs" value="Lecture" onChange={handleLoisirs} />
+            Lecture
+            <input type="checkbox" name="loisirs" value="Musique" onChange={handleLoisirs} />
+            Musique
+            <input type="checkbox" name="loisirs" value="Photo" onChange={handleLoisirs} />
+            Photo
+          </div>
+          
+          <div className="button-container">
+            <input type="submit" value="S'inscrire" />
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+
+  function handleLoisirs(e) {
+    const value = e.target.value;
+    if (loisirs.includes(value)) {
+      setLoisirs(loisirs.filter((item) => item !== value));
+    } else {
+      setLoisirs([...loisirs, value]);
+    }
+  }
+
+  return (
+    <div className="app">
+      {isSubmitted ? renderSuccessMessage() : renderForm}
+    </div>
+  );
+}
+
+export default App;
+
+
+.app {
+  font-family: sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 100vh;
+  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+  background-color: #f8f9fd;
+}
+
+.registration-form {
+  background-color: white;
+  padding: 2rem;
+}
+
+input[type="text"],
+input[type="date"],
+select {
+  width: 100%;
+  height: 25px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  margin-bottom: 10px;
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+

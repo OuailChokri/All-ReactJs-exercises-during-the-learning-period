@@ -1,0 +1,233 @@
+index.js : 
+
+import React from "react";
+import { createRoot } from "react-dom";  
+import App from "./App";
+import { Provider } from "react-redux";
+import { legacy_createStore } from "redux";
+import Reducer from "./store/Reducer";
+
+const store = legacy_createStore(Reducer);
+const root = createRoot(document.getElementById("root"));  
+root.render(
+  <Provider store={store} >
+    <App/>
+  </Provider>
+);
+
+App.js ::
+
+import React from 'react';
+import {BrowserRouter , Routes, Route} from 'react-router-dom';
+import Livre from './composants/Livres';
+import Details from './composants/DetailsLivre';
+
+const App =()=>{
+  return(
+      <div>
+        <BrowserRouter>
+        <Routes>
+          <Route path='/' element={<Livre/>}/>
+          <Route path='/details' element={<Details/>}/>
+        </Routes>
+        </BrowserRouter>
+      </div>
+  );
+}
+
+export default App;
+
+
+/composants/Header.js : :
+import React from 'react';
+import { Link } from 'react-router-dom';
+
+const Header =()=>{
+    return (
+        <div>
+            <h1>Bibliothéque</h1><br/>
+            <Link>Acceuil</Link> <Link to='/details'>Details</Link>  
+        </div>
+    );
+}
+
+export default Header;
+
+/composants/Livres.js :
+
+import {React,useState,useEffect} from "react";
+import axios from "axios";
+import {useDispatch, useSelector} from 'react-redux';
+import { add } from "../store/Action";
+import Header from "./Header";
+import Panier from "./Panier";
+import { setLivres } from "../store/Action";
+
+const Livre = ()=>{
+    const [books,setBooks] = useState([]);
+    const dispatch = useDispatch();
+    const panier = useSelector((data)=>data.Panier);
+    useEffect(() => {
+        axios.get('http://localhost:5000/Livres')
+            .then((response) => {
+                setBooks(response.data);
+                dispatch(setLivres(response.data));
+            })
+            .catch((error) => {
+                console.error('Une erreur s\'est produite lors de la récupération des données :', error);
+            });
+    }, [dispatch]); 
+    const addToCart =(book)=>{
+        dispatch(add(book));
+    };
+    const totalPrix = panier.reduce((somme,currentItem)=>somme + currentItem.Prix,0);
+    return(
+        <div>
+            <Header/>
+            <table>
+                <tr>
+                    <th>ISBN</th>
+                    <th>Titre</th>
+                    <th>Auteur</th>
+                    <th>Prix</th>
+                    <th>Action</th>
+                </tr>
+                {books.map((book,index)=>{
+                    return(
+                            <tr key={index}>
+                                <td>{book.ISBN}</td>
+                                <td>{book.Titre}</td>
+                                <td>{book.Auteur}</td>
+                                <td>{book.Prix}</td>
+                                <td>
+                                    <button onClick={()=>addToCart(book)}>Ajouter Au Panier</button>
+                                </td>
+                            </tr>
+                    );
+                })}
+            </table>
+            <Panier/>
+            <p>Total : {totalPrix}</p>
+        </div>
+    );
+}
+export default Livre;
+
+
+
+// npx json-server --watch src/db.json --port 5555
+
+
+/composants/Panier.js : 
+
+
+import React from "react";
+import { useSelector ,useDispatch} from "react-redux";
+import { remove } from "../store/Action";
+
+const Panier =()=>{
+    const panier = useSelector((data)=>data.Panier);
+    const dispatch = useDispatch();
+    
+    const deleteToCart =(id)=>{
+        dispatch(remove(id));
+    }
+    return(
+        <div>
+             {panier.map((p,index)=>{
+                return(
+                    <ul key={index}>
+                        <li>{p.Titre} - {p.Prix} <button onClick={()=>deleteToCart(p.ISBN)}>Supprimer</button></li>
+                    </ul>
+                );
+            })}   
+            
+        </div>
+    );
+}
+
+export default Panier;
+
+
+/composants/DetailsLivre.js : 
+
+import React from "react";
+import { useSelector } from "react-redux";
+
+const Details =()=>{
+    const livres = useSelector((data)=>data.Livres);
+    return(
+        <div>
+            {livres.map((livre,index)=>{
+                return (
+                <div key={index}>
+                     <p>{livre.ISBN}</p>
+                     <p>{livre.Titre}</p>
+                     <p>{livre.Auteur}</p>
+                     <p>{livre.Prix}</p>
+                     <p>{livre.Genre}</p>
+                </div>
+            );
+            })}
+        </div>
+    );
+};
+export default Details;
+
+/store/Reducer.js ::
+
+const initialState = {
+    Panier : [],
+    Livres : []
+}
+
+const Reducer = (state = initialState, action) => {
+    switch (action.type) {
+        case 'ADD':
+            return { ...state, Panier: [...state.Panier, action.payload.book] };
+        case 'REMOVE':
+            const filterBook = state.Panier.filter((book) => book.ISBN !== action.payload.id);
+            return { ...state, Panier: filterBook };
+        case 'LIVRES':
+            return {...state,Livres:action.payload.livres};
+        default:
+            return state;
+    }
+};
+export default Reducer;
+
+
+db.json : 
+
+{
+    "Livres": [
+        {
+            "ISBN": "11",
+            "Titre": "Dune",
+            "Auteur": "Frank Herbert",
+            "Prix": 250,
+            "Genre": "Science Fiction"
+        },
+        {
+            "ISBN": "22",
+            "Titre": "Dune",
+            "Auteur": "Jane Austen",
+            "Prix": 180,
+            "Genre": "Romance"
+        }
+    ]
+}
+
+
+/store/Action.js ::
+
+export const add =(book)=>{
+    return {type : 'ADD' , payload : {book}};
+};
+export const remove =(id)=>{
+    return {type : 'REMOVE',payload : {id}};
+}
+export const setLivres = (livres) => {
+    return {type: 'LIVRES',payload: { livres }};
+};
+

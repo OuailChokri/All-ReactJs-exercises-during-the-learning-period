@@ -1,0 +1,106 @@
+ListeMachine.js : 
+
+import {useState} from 'react';
+import Machine from './Machine';
+import MachinePanier from './MachinePanier';
+
+const ListeMachine =()=>{
+    const [panier,setPanier] = useState([]);
+    const listMachine = [
+        {
+          id: 1,
+          ref: "ref1",
+          marque: "TOSHIBA",
+          prix: 15000,
+          description: "PC Portable Gamer TOSHIBA",
+        },
+        {
+          id: 2,
+          ref: "ref2",
+          marque: "ACER",
+          prix: 5000,
+          description: "PC Portable Chromebook Acer",
+        },
+        {
+          id: 3,
+          ref: "ref3",
+          marque: "HUAWEI",
+          prix: 17000,
+          description: "PC Portable Gamer-HUAWEI",
+        },
+      ];
+    return(
+        <div>
+            <h1>ListeMachine</h1>
+            <div>
+            {listMachine.map((list,index)=>{
+                return(
+                    <Machine
+                    key={index}
+                    infos = {list}
+                    panier = {panier}
+                    setPanier = {setPanier}
+                    />
+                );
+            })}
+            </div>
+            <div>
+                {panier.length === 0 ? (<h1>Le panier est vide</h1>) : 
+                panier.map((p,index)=>{
+                    return(
+                        <MachinePanier
+                        key={index}
+                        description = {p.description}
+                        prix = {p.prix}
+                        marque = {p.marque}
+                        rf = {p.ref}
+                        />
+                    );
+                })
+                };
+            </div>
+        </div>
+    );
+}
+
+export default ListeMachine;
+  
+
+Machine.js :
+
+import React from "react";
+
+
+const Machine =(props)=>{
+    const {ref,marque,prix,description} = props.infos;
+    const panier = props.panier;
+    const setPanier = props.setPanier;
+
+    const Ajouter =()=>{
+        setPanier([...panier,props.infos]);
+    }
+
+    return (
+        <div>
+            <p>ref:{ref},marque:{marque},prix:{prix},description:{description}</p>
+            <button onClick={()=>Ajouter()}>Ajouter au panier</button>
+        </div>
+    );
+}
+export default Machine;
+
+
+
+MachinePanier.js :
+
+
+import React from 'react';
+
+const MachinePanier =(props)=>{
+  return(
+    <div>
+      <p>ref:{props.rf},marque:{props.marque},prix:{props.prix},description:{props.description}</p>
+    </div>
+  );
+}
+export default MachinePanier;

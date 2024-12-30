@@ -1,0 +1,43 @@
+Salutation.js : 
+
+Exercice d’application : 
+
+import React, { useEffect, useState } from 'react';
+
+export default function Salutation(props) {
+  const [nom, setNom] = useState('---');
+  const [prenom, setPrenom] = useState('---');
+  const [age, setAge] = useState(0);
+
+  function changeNom(e) {
+    setNom(e.target.value);
+  }
+
+  function changePrenom(e) {
+    setPrenom(e.target.value);
+  }
+
+  function changeAge(e) {
+    setAge(e.target.value);
+  }
+
+  useEffect(() => {
+    document.title = `${nom} ${prenom}`;
+  }, [nom, prenom]);
+
+  return (
+    <div>
+      <label>nom:</label>
+      <input type="text" value={nom} onChange={changeNom} />
+      <label>prénom:</label>
+      <input type="text" value={prenom} onChange={changePrenom} />
+      <label>âge:</label>
+      <input type="text" value={age} onChange={changeAge} />
+      <h2>Salutation</h2>
+      <p>salut {nom} {prenom} votre âge est : {age}</p>
+    </div>
+  );
+}
+
+
+a-b-c

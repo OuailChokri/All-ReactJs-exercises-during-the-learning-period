@@ -1,0 +1,73 @@
+App.js :
+
+import React from "react";
+import Header from "./Header";
+import Presentation from "./Presentation";
+import Voiture1 from "./Voiture1";
+import Voiture2 from "./Voiture2";
+import ReactDOM from "react-dom";
+
+
+function App() {
+  return (
+    <div>
+      <Voiture1/>
+      <Voiture2/>
+    </div>
+  );
+}
+
+
+ReactDOM.render(<App />, document.getElementById('root'));
+
+export default App;
+
+index.js :
+
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
+
+const root = ReactDOM.createRoot(document.getElementById('root')); // Use createRoot instead of ReactDOM.render
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+reportWebVitals();
+
+
+Voiture1.js :
+
+import React from "react";
+
+export default function Voiture() {
+  const myVoiture = { matricule: '19873X9', marque: 'Toyota', chevaux: 8 };
+
+  return (
+    <div>
+      <h1 style={{ color: 'green' }}>Information voiture</h1>
+      <h4>voiture matricule:<span style={{ color: 'red' }}>{myVoiture.matricule}</span></h4>
+      <h5>marque: {myVoiture.marque} nombre de chevaux: {myVoiture.chevaux}</h5>
+    </div>
+  );
+}
+
+Voiture2.js :
+
+import React from "react";
+
+export default function Voiture2() {
+  const myVoiture = { matricule: '12345AB', marque: 'Ford', chevaux: 6 };
+
+  return (
+    <div>
+      <h1 style={{ color: 'blue' }}>Information voiture</h1>
+      <h4>voiture matricule:<span style={{ color: 'orange' }}>{myVoiture.matricule}</span></h4>
+      <h5>marque: {myVoiture.marque} nombre de chevaux: {myVoiture.chevaux}</h5>
+    </div>
+  );
+}

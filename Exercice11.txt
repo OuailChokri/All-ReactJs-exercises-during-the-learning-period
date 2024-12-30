@@ -1,0 +1,103 @@
+
+
+jsx
+Copy code
+import React, { useState } from "react";
+import PlayerOne from "./PlayerOne";
+
+export default function App() {
+  const [currentNumber, setCurrentNumber] = useState(null);
+
+  const startGame = (number) => {
+    setCurrentNumber(number);
+  };
+
+  return (
+    <div className="App">
+      <h1>Le jeu de Dé</h1>
+      <PlayerOne startGame={startGame} />
+    </div>
+  );
+}
+Le composant PlayerOne est responsable du choix du numéro par le premier joueur :
+
+jsx
+Copy code
+import React, { useState } from "react";
+import PlayerTwo from "./PlayerTwo";
+
+export default function PlayerOne({ startGame }) {
+  const [chosenNumber, setChosenNumber] = useState(1);
+
+  const handleChooseNumber = () => {
+    startGame(chosenNumber);
+  };
+
+  return (
+    <div>
+      <h2>Joueur 1</h2>
+      <p>Choisissez un numéro entre 1 et 6:</p>
+      <input
+        type="number"
+        min="1"
+        max="6"
+        value={chosenNumber}
+        onChange={(e) => setChosenNumber(parseInt(e.target.value))}
+      />
+      <button onClick={handleChooseNumber}>Jouer</button>
+      <PlayerTwo chosenNumber={chosenNumber} />
+    </div>
+  );
+}
+Le composant PlayerTwo est responsable du jeu du deuxième joueur :
+
+jsx
+Copy code
+import React, { useState, useEffect } from "react";
+
+export default function PlayerTwo({ chosenNumber }) {
+  const [diceRoll, setDiceRoll] = useState(0);
+  const [attempts, setAttempts] = useState(0);
+  const [gameOver, setGameOver] = useState(false);
+
+  useEffect(() => {
+    const rollDice = () => {
+      const randomNumber = Math.floor(Math.random() * 6) + 1;
+      setDiceRoll(randomNumber);
+      setAttempts(attempts + 1);
+
+      if (randomNumber === chosenNumber) {
+        setGameOver(true);
+      }
+    };
+
+    if (!gameOver) {
+      const interval = setInterval(rollDice, 1000);
+
+      return () => {
+        clearInterval(interval);
+      };
+    }
+  }, [chosenNumber, attempts, gameOver]);
+
+  const handleRestart = () => {
+    setDiceRoll(0);
+    setAttempts(0);
+    setGameOver(false);
+  };
+
+  return (
+    <div>
+      <h2>Joueur 2</h2>
+      <p>Lancez le dé pour trouver le numéro caché ({chosenNumber}):</p>
+      <p>Dé: {diceRoll}</p>
+      <p>Essais: {attempts}</p>
+      {gameOver && (
+        <div>
+          <p>Bravo! Vous avez trouvé le numéro caché après {attempts} essais.</p>
+          <button onClick={handleRestart}>Initialiser</button>
+        </div>
+      )}
+    </div>
+  );
+}

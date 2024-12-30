@@ -1,0 +1,70 @@
+import React,{useState} from 'react';
+
+export default function Formulaire(){
+    const [nom,setNom] = useState('');
+    const [prenom,setPrenom] = useState('');
+    const [ville,setVille] = useState('');
+    const [loisire,setLoisire] = useState('');
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [resultats,setResultats] = useState([]);
+
+    function handlSubmit(event){
+        event.preventDefault();
+        if(nom !== ''){
+            const newElement = {
+                nom,
+                prenom,
+                ville,
+                loisire,
+                selectedFile
+            }
+            setResultats([...resultats, newElement]);
+            setNom('');
+            setPrenom('');
+            setVille('');
+            setLoisire('');
+            setSelectedFile(null);
+              
+        }
+    }
+    const AfficherClient = resultats.map((result, index) => (
+        <div key={index}>
+          <p>Nom : {result.nom}</p>
+          <p>Prenom : {result.prenom}</p>
+          <p>Ville : {result.ville}</p>
+          <p>Loisir : {result.loisire}</p>
+          {result.selectedFile && (
+        <img src={URL.createObjectURL(result.selectedFile)} alt="Uploaded" />
+      )}
+        </div>
+      ));
+      
+      
+    return (
+        <div>
+            <form onSubmit={handlSubmit}>
+                <label>Nom : </label>
+                <input type="text" value={nom} onChange={(e)=>setNom(e.target.value)}/><br/><br/>
+                <label>Prenom : </label>
+                <input type="text" value={prenom} onChange={(e)=>setPrenom(e.target.value)}/><br/><br/>
+                <label>Ville : </label>
+                <select onChange={(e)=>setVille(e.target.value)}>
+                    <option value="nador">Nador</option>
+                    <option value="fes">fes</option>
+                    <option value="casa">casa</option>
+                </select><br/><br/>
+                <label>Loisir : </label>
+                <input type="checkbox" value='Musique' onChange={(e)=>setLoisire(e.target.value)}/>Musique
+                <input type="checkbox" value='Football' onChange={(e)=>setLoisire(e.target.value)}/>Football
+                <input type="checkbox" value='Suiming' onChange={(e)=>setLoisire(e.target.value)}/>Suiming <br/><br/>
+                <label>Photo (PNG only): </label>
+                <input type="file" accept=".png" onChange={(e)=>setSelectedFile(e.target.files[0])} /><br/><br/>
+                <input type='submit'/>
+            </form>
+            <h1>Liste Element : </h1>
+            <div>
+                {AfficherClient}
+            </div>
+        </div>
+    );
+}

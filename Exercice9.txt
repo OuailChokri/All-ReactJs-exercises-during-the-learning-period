@@ -1,0 +1,87 @@
+ListArticle.js : 
+
+import React, { useState } from "react";
+
+export default function ListArticle() {
+  const [id, setId] = useState(0);
+  const [designation, setDesignation] = useState("");
+  const [prix, setPrix] = useState(0);
+  const [articles, setArticles] = useState([]);
+
+  function handlerAddArticle() {
+    // Créer un nouvel article
+    const newArticle = {
+      id,
+      designation,
+      prix
+    };
+
+    // Ajouter le nouvel article à la liste
+    setArticles([...articles, newArticle]);
+
+    // Réinitialiser les champs
+    setId(0);
+    setDesignation("");
+    setPrix(0);
+  }
+
+  function handlerOnChangeId(event) {
+    setId(parseInt(event.target.value, 10));
+  }
+
+  function handlerOnChangeDesignation(event) {
+    setDesignation(event.target.value);
+  }
+
+  function handlerOnChangePrix(event) {
+    setPrix(parseFloat(event.target.value));
+  }
+
+  return (
+    <div className="container">
+      <div className="list">
+        <h2 className="title">Ajout d'un Article</h2>
+        <div>
+          <label>Id:</label>
+          <input type="text" onChange={handlerOnChangeId} value={id} />
+        </div>
+        <div>
+          <label>Désignation:</label>
+          <input type="text" onChange={handlerOnChangeDesignation} value={designation} />
+        </div>
+        <div>
+          <label>Prix:</label>
+          <input type="text" onChange={handlerOnChangePrix} value={prix} />
+        </div>
+        <div>
+          <input type="button" value="Ajouter" onClick={handlerAddArticle} />
+        </div>
+        <div>
+          <h3>Liste Articles</h3>
+          <ul>
+            {articles.map((article, index) => (
+              <li key={index}>
+                ID: {article.id}, Désignation: {article.designation}, Prix: {article.prix}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+app.js : 
+
+import React, { useState } from "react";
+import './index.css';
+import ListArticle from "./ListArticle";
+
+export default function App() {
+  return (
+    <div className="App">
+      <ListArticle />
+    </div>
+  );
+}

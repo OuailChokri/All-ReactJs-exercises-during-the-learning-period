@@ -1,0 +1,338 @@
+Ex 1 : 
+
+import React, { useState } from 'react';
+
+const App = () => {
+  const [stagiaires, setStagiaires] = useState([
+    {
+      id: 1,
+      matricule: 1454,
+      nom: "Alaoui",
+      codepostal: 20400,
+      ville: "casa",
+      moyenne: 12.56,
+    },
+    {
+      id: 2,
+      matricule: 1455,
+      nom: "Mansouri",
+      codepostal: 20400,
+      ville: "casa",
+      moyenne: 14.67,
+    },
+    {
+      id: 3,
+      matricule: 3454,
+      nom: "Ramdani",
+      codepostal: 10400,
+      ville: "rabat",
+      moyenne: 11.45,
+    },
+  ]);
+
+  const [dataForm, setDataForm] = useState({
+    id: 0,
+    matricule: '',
+    nom: '',
+    codepostal: 0,
+    ville: '',
+    moyenne: 0
+  });
+
+  const [dataFiltrer, setDataFiltrer] = useState([]);
+  const [dataFormFiltrer,setDataFormFiltrer] = useState({nom : '',ville:''});
+
+  const ajouterStagiaire = (e) => {
+    e.preventDefault();
+    const newStagiaire = { ...dataForm, id: stagiaires.length + 1 };
+    setStagiaires([...stagiaires, newStagiaire]);
+    setDataForm({
+      id: 0,
+      matricule: '',
+      nom: '',
+      codepostal: 0,
+      ville: '',
+      moyenne: 0
+    });
+  }
+
+  const supprimerStagiaire = (id) => {
+    const stagiairesFiltres = stagiaires.filter((s) => s.id !== id);
+    setStagiaires(stagiairesFiltres);
+  }
+
+  const editerStagiaire = (id) => {
+    const updatedStagiaires = stagiaires.map((stagiaire)=>stagiaire.id === id ? {
+      ...stagiaire,
+      nom: dataForm.nom || stagiaire.nom,
+      matricule: dataForm.matricule || stagiaire.matricule,
+      ville: dataForm.ville || stagiaire.ville,
+      codepostal: dataForm.codepostal || stagiaire.codepostal,
+      moyenne: dataForm.moyenne || stagiaire.moyenne,
+    } : stagiaire);
+
+
+    setStagiaires(updatedStagiaires);
+    setDataForm({
+      id: 0,
+      matricule: '',
+      nom: '',
+      codepostal: 0,
+      ville: '',
+      moyenne: 0
+    });
+  };
+
+  const vider = () => {
+    setDataForm({
+      id: 0,
+      matricule: '',
+      nom: '',
+      codepostal: 0,
+      ville: '',
+      moyenne: 0
+    });
+  }
+
+  const FiltrerStagiaire = (e) => {
+    e.preventDefault();
+    const filtered = stagiaires.filter((s) => s.nom === dataFormFiltrer.nom || s.ville === dataFormFiltrer.ville);
+    setDataFiltrer(filtered);
+  }
+
+  const Renitialiser = () => {
+    setDataFiltrer([]);
+  }
+
+  const moyennePlusEleve = stagiaires.reduce((acc,curr)=>{
+    return acc > curr.moyenne ? acc : curr.moyenne;
+  },0)
+
+  const moyenneMoinsEleve = stagiaires.reduce((acc,curr)=>{
+    return acc.moyenne < curr.moyenne ? acc.moyenne : curr.moyenne;
+  },0)
+
+  const moyenneClass = (stagiaires.reduce((acc,curr)=>acc + curr.moyenne,0)/stagiaires.length).toFixed(2);
+
+  return (
+    <div>
+      <h1>Liste Stagiaires</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Matricule</th>
+            <th>Nom</th>
+            <th>Code Postal</th>
+            <th>Ville</th>
+            <th>Moyenne</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {stagiaires.map((stagiaire) => (
+            <tr key={stagiaire.id}>
+              <td>{stagiaire.id}</td>
+              <td>{stagiaire.matricule}</td>
+              <td>{stagiaire.nom}</td>
+              <td>{stagiaire.codepostal}</td>
+              <td>{stagiaire.ville}</td>
+              <td>{stagiaire.moyenne}</td>
+              <td>
+                <button onClick={() => supprimerStagiaire(stagiaire.id)}>Supprimer</button>
+                <button onClick={() => editerStagiaire(stagiaire.id)}>Editer</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <div>
+        <h2>Ajouter Stagiaire</h2>
+        <form onSubmit={ajouterStagiaire}>
+          <label>Id</label>
+          <input type="number" value={dataForm.id} onChange={(e) => setDataForm({ ...dataForm, id: e.target.value })} />
+          <label>Matricule</label>
+          <input type="text" value={dataForm.matricule} onChange={(e) => setDataForm({ ...dataForm, matricule: e.target.value })} />
+          <label>Nom</label>
+          <input type="text" value={dataForm.nom} onChange={(e) => setDataForm({ ...dataForm, nom: e.target.value })} />
+          <label>Code Postal</label>
+          <input type="number" value={dataForm.codepostal} onChange={(e) => setDataForm({ ...dataForm, codepostal: e.target.value })} />
+          <label>Ville</label>
+          <input type="text" value={dataForm.ville} onChange={(e) => setDataForm({ ...dataForm, ville: e.target.value })} />
+          <label>Moyenne</label>
+          <input type="number" value={dataForm.moyenne} onChange={(e) => setDataForm({ ...dataForm, moyenne: e.target.value })} />
+
+          <button type="submit">Ajouter</button>
+          <button type="button" onClick={vider}>Vider</button>
+        </form>
+      </div>
+
+      <div>
+        <h3>Filtrer par nom ou ville</h3>
+        <form onSubmit={FiltrerStagiaire}>
+          <label>Nom</label>
+          <input type="text" value={dataFormFiltrer.nom} onChange={(e) => setDataFormFiltrer({ ...dataFormFiltrer, nom: e.target.value })} />
+          <label>Ville</label>
+          <input type="text" value={dataFormFiltrer.ville} onChange={(e) => setDataFormFiltrer({ ...dataFormFiltrer, ville: e.target.value })} />
+
+          <button type="submit">Filtrer</button>
+          <button type="button" onClick={Renitialiser}>Réinitialiser La recherche</button>
+        </form>
+        <div>
+          {dataFiltrer.length === 0 ? null : (
+            <ul>
+              {dataFiltrer.map((d, index) => (
+                <li key={index}>{d.nom} - {d.ville}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+
+      <div>
+        <h4>Les Moyennes</h4>
+        <p>La moyenne la plus élevée : {moyennePlusEleve}</p>
+        <p>La moyenne la moins élevée : {moyenneMoinsEleve}</p>
+        <p>La moyenne de la classe : {moyenneClass}</p>
+      </div>
+    </div>
+  );
+}
+
+export default App;
+
+
+Ex 2 : 
+
+App.js : 
+
+import React from "react";
+import Outputs from './components/Outputs';
+import Cinputs from "./components/Cinputs";
+
+function App() {
+  return (
+    <div>
+      <Cinputs/>
+      <Outputs/>
+    </div>
+  );
+}
+
+export default App;
+
+/components/Outputs.js : 
+
+import React from 'react';
+import { useSelector } from 'react-redux';
+
+const Output =()=>{
+    const result = useSelector((data)=>data.result);
+
+    return (
+        <div>
+            <p>Résult : {result}</p>
+        </div>
+    );
+}
+export default Output;
+
+/component/Cinputs.js : 
+
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { add, multiply, subtract, divide } from '../store/action';
+
+const Cinputs = () => {
+    const [nb1, setNb1] = useState('');
+    const [nb2, setNb2] = useState('');
+    const dispatch = useDispatch();
+
+    const handleAdd = () => {
+        dispatch(add(parseInt(nb1), parseInt(nb2)));
+    };
+
+    const handleSubtract = () => {
+        dispatch(subtract(parseInt(nb1), parseInt(nb2)));
+    };
+
+    const handleMultiply = () => {
+        dispatch(multiply(parseInt(nb1), parseInt(nb2)));
+    };
+
+    const handleDivide = () => {
+        dispatch(divide(parseInt(nb1), parseInt(nb2)));
+    };
+
+    return (
+        <div>
+            <h1>Simple Calculator</h1>
+            <br />
+            <input type='text' placeholder='0' value={nb1} onChange={(e) => setNb1(e.target.value)} />
+            <input type='text' placeholder='0' value={nb2} onChange={(e) => setNb2(e.target.value)} />
+            <button onClick={handleAdd}>+</button>
+            <button onClick={handleSubtract}>-</button>
+            <button onClick={handleMultiply}>*</button>
+            <button onClick={handleDivide}>/</button>
+        </div>
+    );
+};
+
+export default Cinputs;
+
+/store/action : 
+
+//add subtract MULTIPLY divide
+export const add =(value1,value2)=>{
+    return {type : 'ADD', payload : {value1,value2}};
+}
+export const subtract =(value1,value2)=>{
+    return {type : 'SUB', payload : {value1,value2}};
+}
+export const multiply =(value1,value2)=>{
+    return {type : 'MUL', payload : {value1,value2}};
+}
+export const divide =(value1,value2)=>{
+    return {type : 'DIV', payload : {value1,value2}};
+}
+
+/store/reducer : 
+
+const initialState = {
+    result : 0
+};
+const Reducer =(state = initialState, action)=>{
+    switch (action.type){
+        case 'ADD' : 
+            return {...state, result : action.payload.value1 + action.payload.value2};
+        case 'SUB' : 
+            return {...state, result : action.payload.value1 - action.payload.value2};
+        case 'MUL':
+            return {...state, result : action.payload.value1 * action.payload.value2};
+        case 'DIV':
+            return {...state, result : action.payload.value1 / action.payload.value2};
+            default : return state;
+    }
+}
+
+export default Reducer;
+
+index.js : 
+
+import React from "react";
+import ReactDOM from "react-dom";
+import { createRoot } from "react-dom";  // Updated import
+import { Provider } from "react-redux";
+import { legacy_createStore } from "redux";
+import App from "./App";
+import Reducer from "./store/reducer";
+
+const store = legacy_createStore(Reducer);
+
+const root = createRoot(document.getElementById("root"));  
+root.render(
+  <Provider store={store}>
+    <App />
+  </Provider>
+);
